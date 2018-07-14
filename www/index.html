@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+  <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+  <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+
+  <!-- SetUp Vue Bindings -->
+  <!-- <link rel="stylesheet" href="onsenui.css">
+  <link rel="stylesheet" href="onsen-css-components.css">
+
+  <script src="vue.js"></script>
+  <script src="onsenui.js"></script>
+  <script src="vue-onsenui.js"></script> -->
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- 
+  <script src="components/loader.js"></script>
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+  <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
+ -->
+
+</head>
+
+<style>
+  .logo-container {
+    float: top;
+    margin-top: 30%;
+
+
+  }
+
+  .caption {
+    margin-top: 5%;
+    font-family: 'Courier', sans-serif;
+    text-align: center;
+    letter-spacing: 2px;
+
+  }
+
+  .button-logo {
+    margin-top: 40%;
+    float: top;
+
+  }
+
+  #push-button {
+    width: 60%;
+    border-radius: 15px;
+
+    padding: 2%;
+
+  }
+
+  .start-header {
+    font-family: 'Courier', 'sans-serif';
+    letter-spacing: 2px;
+
+  }
+</style>
+
+<body>
+
+  <ons-navigator swipeable id="myNavigator" page="index.html" animation="slide"></ons-navigator>
+
+  <template id="index.html">
+    <!--FirstPage-->
+    <ons-page id="index">
+      <div class="logo-container">
+        <img class="logo" src="images/icons/logo.png" />
+        <h4 class="caption">Connect to people nearby</h4>
+      </div>
+
+      <div class="button-logo">
+        <h2 class="start-header">Let's Start</h2>
+        <ons-button id="push-button">Continue</ons-button>
+      </div>
+    </ons-page>
+  </template>
+  <!--FirstPage-->
+
+  <template id="registration-nickname.html">
+    <ons-page id="registration-nickname" ng-controller="UsersController as user">
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button>Back</ons-back-button>
+        </div>
+        <div class="center text-primary">Registration</div>
+      </ons-toolbar>
+
+      <ons-row>
+        <ons-col class="text-center">
+          <ons-row class="margin-top-10">
+            <ons-col>
+              <h3>Please enter your nickname</h3>
+            </ons-col>
+          </ons-row>
+
+          <ons-row>
+            <ons-col class="text-center">
+              <form id="push-form" class="text-center">
+                <ons-input style="text-align:center;" id="nickname" class="margin-top-10 text-center" placeholder="Enter nickname" modifier="material"
+                  float autofocus></ons-input>
+              </form>
+            </ons-col>
+          </ons-row>
+
+          <ons-row>
+            <ons-col class="text-center margin-top-10">
+              <h4>Find it with NowNow</h4>
+              <img src="images/icons/magnifier.png" alt="searching" style="width: 20vh;height:20vh;">
+            </ons-col>
+          </ons-row>
+
+
+
+        </ons-col>
+
+      </ons-row>
+    </ons-page>
+  </template>
+
+
+  <template id="registration-age.html">
+    <ons-page id="registration-age">
+      <ons-toolbar>
+        <ons-back-button class="left">Back</ons-back-button>
+        <div class="center text-primary">Registration</div>
+      </ons-toolbar>
+
+      <ons-col class="text-center margin-top-10">
+        <h3>Please enter your birthday.</h3>
+      </ons-col>
+
+      <ons-row>
+        <ons-col class="text-center">
+          <ons-input class="margin-top-10 width-80" id="birthday" type="date" modifier="material" placeholder="" float autofocus></ons-input>
+        </ons-col>
+      </ons-row>
+
+      <ons-row>
+        <ons-col class="text-center margin-top-10">
+          <h3>Anytime</h3>
+          <img class="margin-top-10 icon" src="images/icons/signal.png" />
+          <div class="button-nextBirthday">
+            <ons-button id="btn-nextBirthday" style="padding:2%; border-radius:15px; width:60%; margin-top:15%;">Next</ons-button>
+          </div>
+        </ons-col>
+      </ons-row>
+
+    </ons-page>
+  </template>
+
+  <template id="registration-gender.html">
+    <ons-page id="registration-gender">
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button>Back</ons-back-button>
+        </div>
+        <div class="center text-primary">Registration</div>
+      </ons-toolbar>
+
+      <ons-col class="text-center margin-top-10">
+        <h3>Please push your Gender.</h3>
+      </ons-col>
+
+      <div class="container">
+        <ons-row class="margin-top-10">
+          <ons-col>
+            <ons-row class="text-center">
+              <ons-col style="padding: 0!important;">
+                <ons-icon icon="md-male" size="25px"></ons-icon>
+                <ons-radio id="radio_male" class="form-control" name="gender" value="Male" checked> Male</ons-radio>
+              </ons-col>
+              <ons-col style="padding: 0!important;">
+                <ons-icon icon="md-female" size="25px"></ons-icon>
+                <ons-radio id="radio_female" class="form-control" name="gender" value="Female">Female</ons-radio>
+              </ons-col>
+            </ons-row>
+          </ons-col>
+        </ons-row>
+
+        <ons-row class="margin-top-quarter">
+          <ons-col class="text-center">
+            <h3>Please select your Area</h3>
+          </ons-col>
+        </ons-row>
+
+        <ons-row class="margin-top-10">
+          <ons-col width="55px"></ons-col>
+          <ons-col>
+            <ons-select class="form-control" id="registration-area" style="margin-left: 10%!important;">
+              <option>Hokkaido</option>
+              <option>Tohoku</option>
+              <option>Kanto</option>
+              <option>Chubu</option>
+              <option>Kinki/Kansai</option>
+              <option>Chugoku</option>
+              <option>Shikoku</option>
+              <option>Kyushu (incl. Okinawa)</option>
+            </ons-select>
+          </ons-col>
+          <ons-col width="55px"></ons-col>
+        </ons-row>
+
+        <ons-row>
+          <ons-col>
+            <div class="button-nextGender" style="  width:100%; margin-top:30%;  text-align:center;">
+              <ons-button id="btn-nextGender" style="padding:2%; border-radius:15px; width:60% ;">Next</ons-button>
+            </div>
+          </ons-col>
+        </ons-row>
+
+      </div>
+
+    </ons-page>
+  </template>
+
+
+  <template id="registration-bio.html">
+    <ons-page id="registration-bio">
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button>Back</ons-back-button>
+        </div>
+        <div class="center text-primary">Registration</div>
+      </ons-toolbar>
+
+      <div class="row">
+        <p class="text-muted text-center">Please create your user icon.</p>
+        <center>
+          <!-- Modified style.css for male and female avatars -->
+          <div id="avatar" class="rounded-circle">
+          </div>
+        </center>
+      </div>
+      <br/>
+
+      <div class="row">
+      </div>
+      <p class="text-muted text-center">Let's write about yourself.</p>
+      <div class="row text-center">
+        <textarea id="aboutMe" class="row" rows="8" style="width:90%; padding:1%; border-radius:15px;"></textarea>
+      </div>
+
+
+      <ons-row class="margin-top-1 text-center width-100">
+        <ons-col>
+          <ons-button id="btn-nextComplete" class="btn btn-block btn-primary text-center" style="padding:2%; border-radius:15px; width:60%; margin-top:10%;">Done</ons-button>
+        </ons-col>
+      </ons-row>
+
+    </ons-page>
+  </template>
+
+  <template id="registration-complete.html">
+    <ons-page id="registration-complete">
+
+      <ons-toolbar>
+        <div class="center text-primary">Registration</div>
+      </ons-toolbar>
+
+      <div class="row margin-top-quarter">
+        <ons-row class="margin-top-quarter">
+          <ons-col>
+            <h1 class="text-muted text-center">Registration Complete!</h1>
+            <h6 class="text-muted text-center" style="font-family:Courier, sans-serif;">Please wait for the administrator to approve your registration </h6>
+
+          </ons-col>
+        </ons-row>
+
+        <ons-row class="margin-top-30 text-center width-80" style="margin-left: 10%!important;">
+          <ons-col>
+            <ons-button class="btn btn-block btn-primary text-center" onclick="window.location.href = 'loginpage.html' " style="padding:2%; border-radius:15px; width:60%; margin-top:80%;">Okay</ons-button>
+          </ons-col>
+        </ons-row>
+      </div>
+    </ons-page>
+  </template>
+
+
+  <!-- 
+  <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyD1n0dqrj4-ivmB3Tkvt96-X0-9MkQ547w",
+      authDomain: "nownow-5e3f3.firebaseapp.com",
+      databaseURL: "https://nownow-5e3f3.firebaseio.com",
+      projectId: "nownow-5e3f3",
+      storageBucket: "nownow-5e3f3.appspot.com",
+      messagingSenderId: "977444553392"
+    };
+    firebase.initializeApp(config);
+  </script> -->
+
+  <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDG4VV3dVvUT4njZroBLRTPlRr1pmnN1os",
+      authDomain: "nownow-98a2f.firebaseapp.com",
+      databaseURL: "https://nownow-98a2f.firebaseio.com",
+      projectId: "nownow-98a2f",
+      storageBucket: "nownow-98a2f.appspot.com",
+      messagingSenderId: "902289067273"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+
+  <script>
+
+    document.addEventListener('init', function (event) {
+
+      /*       var firebaseIDRef = firebase.database().ref().child();
+      
+            firebaseIDRef.on('value', function(datasnapshot){
+              var userID = datasnapshot.val();
+              alert(userID);
+      
+            }); */
+
+      var lastIndex = 0;
+
+      var page = event.target;
+
+      if (page.id === 'index') {
+        page.querySelector('#push-button').onclick = function () {
+
+          ons.notification.alert("This application uses GPS.<br> \
+        Please turn on GPS function.");
+
+          document.querySelector('#myNavigator').pushPage('registration-nickname.html');
+        }
+      } else if (page.id === 'registration-nickname') {
+        page.querySelector('#push-form').onsubmit = function () {
+          if ($('#nickname').val() == '') {
+            ons.notification.alert("Please enter your nickname!");
+            return false;
+          } else {
+
+            // var userID = lastIndex+1;
+
+            // input data (start)
+
+
+            // Reassign lastID value
+            // lastIndex = userID;
+            // $("#addUser input").val("");
+            // input data (end)
+            document.querySelector('#myNavigator').pushPage('registration-age.html');
+            return false;
+          }
+        }
+      } else if (page.id === 'registration-age') {
+        page.querySelector('#btn-nextBirthday').onclick = function () {
+          if ($('#birthday').val() == '') {
+            ons.notification.alert("Please enter your birthday!");
+          } else {
+
+            document.querySelector('#myNavigator').pushPage('registration-gender.html');
+          }
+        }
+      } else if (page.id === 'registration-gender') {
+        page.querySelector('#btn-nextGender').onclick = function () {
+          // var area = $('#registration-area').val();
+
+
+          document.querySelector('#myNavigator').pushPage('registration-bio.html');
+
+        }
+      } else if (page.id === 'registration-bio') {
+
+        var userID = lastIndex + 1;
+        var nickname = $('#nickname').val();
+        var birthday = $('#birthday').val();
+        var gender = $('input[name=gender]:checked').val();
+        var area = $('#registration-area').val();
+
+
+        if (gender == 'Male') {
+
+          $('#avatar').addClass('backImageM');
+
+        } else {
+          $('#avatar').addClass('backImageF');
+        }
+
+        page.querySelector('#btn-nextComplete').onclick = function () {
+
+          // var userID = lastIndex + 1;
+          // var nickname = $('#nickname').val();
+          // var birthday = $('#birthday').val();
+          // var gender = $('input[name=gender]:checked').val();
+          // var area = $('#registration-area').val();
+          // var desc = $('textarea#aboutMe').val();
+          var desc = $('textarea#aboutMe').val();
+
+          firebase.database().ref('users/' + userID).set({
+            nickname: nickname,
+            birthday: birthday,
+            gender: gender,
+            area: area,
+            desc: desc,
+          });
+
+          // Reassign lastID value
+          // lastIndex = userID;
+          // $("#addUser input").val("");
+
+          document.querySelector('#myNavigator').pushPage('registration-complete.html');
+        }
+
+        lastIndex = userID;
+      }
+
+    });
+
+
+/* ons.bootstrap()
+  .controller('UsersController', function($scope) {
+    console.log('controller', $scope.myNavigator.topPage.data);
+
+    this.init = function(e) {
+      // Ensure the emitter is the current page, not a nested one
+      if (e.target === e.currentTarget) {
+        var page = e.target;
+        // Safely access data
+        console.log('init event', page.data);
+      }
+    };
+  }); */
+
+  /* ons.bootstrap().controller('UsersController', function(){
+    this.nickname = '';
+
+  });
+ */
+  </script>
+
+</body>
+
+</html>
