@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <!-- Removing this meta resolves uploading the profile picture -->
 
 
   <link rel="stylesheet" href="css/style.css">
@@ -13,25 +14,10 @@
   <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
   <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
 
-  <!-- SetUp Vue Bindings -->
-  <!-- <link rel="stylesheet" href="onsenui.css">
-  <link rel="stylesheet" href="onsen-css-components.css">
-
-  <script src="vue.js"></script>
-  <script src="onsenui.js"></script>
-  <script src="vue-onsenui.js"></script> -->
-
   <link rel="stylesheet" href="components/loader.css">
   <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
   <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- 
-  <script src="components/loader.js"></script>
-  <script src="lib/angular/angular.min.js"></script>
-  <script src="lib/onsenui/js/onsenui.min.js"></script>
-  <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
- -->
 
 </head>
 
@@ -74,26 +60,51 @@
 
 <body>
 
-  <ons-navigator swipeable id="myNavigator" page="index.html" animation="slide"></ons-navigator>
+  <ons-navigator swipeable id="myNavigator" page="homepage.html" animation="slide"></ons-navigator>
+
+  <!-- <template id="index.html"> -->
+  <template id="homepage.html">
+    <!--FirstPage-->
+    <!-- <ons-page id="index"> -->
+    <ons-page id="homepage">
+      <div class="logo-container">
+        <img class="image-login" align="center" src="images/icons/loginpage.png" />
+        <img class="logo" src="images/icons/logo.png" />
+        <h4 class="caption">Connect to people nearby</h4>
+      </div>
+
+      <div class="button-logo" style="margin-top: 10%">
+        <!-- <h2 class="start-header">Let's Start</h2>
+        <ons-button id="push-button">Continue</ons-button> -->
+
+        <ons-button id="toLogin" onclick="window.location.href = 'loginpage.html' " style="width: 60%;border-radius: 15px;padding: 2%; margin-top:2%;">Login</ons-button>
+
+        <ons-button id="toRegister" style="width: 60%;border-radius: 15px;padding: 2%; margin-top:2%;" onclick="myNavigator.pushPage('index.html')">Register</ons-button>
+
+      </div>
+    </ons-page>
+  </template>
 
   <template id="index.html">
     <!--FirstPage-->
     <ons-page id="index">
       <div class="logo-container">
+        <img class="image-login" align="center" src="images/icons/loginpage.png" />
         <img class="logo" src="images/icons/logo.png" />
         <h4 class="caption">Connect to people nearby</h4>
       </div>
 
-      <div class="button-logo">
+      <div class="button-logo" style="margin-top:25%;">
         <h2 class="start-header">Let's Start</h2>
         <ons-button id="push-button">Continue</ons-button>
       </div>
+
     </ons-page>
   </template>
   <!--FirstPage-->
 
   <template id="registration-nickname.html">
-    <ons-page id="registration-nickname" ng-controller="UsersController as user">
+    <ons-page id="registration-nickname">
       <ons-toolbar>
         <div class="left">
           <ons-back-button>Back</ons-back-button>
@@ -259,7 +270,9 @@
 
       <ons-row class="margin-top-1 text-center width-100">
         <ons-col>
-          <ons-button id="btn-nextComplete" class="btn btn-block btn-primary text-center" style="padding:2%; border-radius:15px; width:60%; margin-top:10%;">Done</ons-button>
+          <div class="button-nextComplete" style="  width:100%; margin-top:10%;  text-align:center;">
+            <ons-button id="btn-nextComplete" style="padding:2%; border-radius:15px; width:60% ;">Done</ons-button>
+          </div>
         </ons-col>
       </ons-row>
 
@@ -306,151 +319,9 @@
     };
     firebase.initializeApp(config);
   </script> -->
-
+  
   <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
-  <script>
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyDG4VV3dVvUT4njZroBLRTPlRr1pmnN1os",
-      authDomain: "nownow-98a2f.firebaseapp.com",
-      databaseURL: "https://nownow-98a2f.firebaseio.com",
-      projectId: "nownow-98a2f",
-      storageBucket: "nownow-98a2f.appspot.com",
-      messagingSenderId: "902289067273"
-    };
-    firebase.initializeApp(config);
-  </script>
-
-
-  <script>
-
-    document.addEventListener('init', function (event) {
-
-      /*       var firebaseIDRef = firebase.database().ref().child();
-      
-            firebaseIDRef.on('value', function(datasnapshot){
-              var userID = datasnapshot.val();
-              alert(userID);
-      
-            }); */
-
-      var lastIndex = 0;
-
-      var page = event.target;
-
-      if (page.id === 'index') {
-        page.querySelector('#push-button').onclick = function () {
-
-          ons.notification.alert("This application uses GPS.<br> \
-        Please turn on GPS function.");
-
-          document.querySelector('#myNavigator').pushPage('registration-nickname.html');
-        }
-      } else if (page.id === 'registration-nickname') {
-        page.querySelector('#push-form').onsubmit = function () {
-          if ($('#nickname').val() == '') {
-            ons.notification.alert("Please enter your nickname!");
-            return false;
-          } else {
-
-            // var userID = lastIndex+1;
-
-            // input data (start)
-
-
-            // Reassign lastID value
-            // lastIndex = userID;
-            // $("#addUser input").val("");
-            // input data (end)
-            document.querySelector('#myNavigator').pushPage('registration-age.html');
-            return false;
-          }
-        }
-      } else if (page.id === 'registration-age') {
-        page.querySelector('#btn-nextBirthday').onclick = function () {
-          if ($('#birthday').val() == '') {
-            ons.notification.alert("Please enter your birthday!");
-          } else {
-
-            document.querySelector('#myNavigator').pushPage('registration-gender.html');
-          }
-        }
-      } else if (page.id === 'registration-gender') {
-        page.querySelector('#btn-nextGender').onclick = function () {
-          // var area = $('#registration-area').val();
-
-
-          document.querySelector('#myNavigator').pushPage('registration-bio.html');
-
-        }
-      } else if (page.id === 'registration-bio') {
-
-        var userID = lastIndex + 1;
-        var nickname = $('#nickname').val();
-        var birthday = $('#birthday').val();
-        var gender = $('input[name=gender]:checked').val();
-        var area = $('#registration-area').val();
-
-
-        if (gender == 'Male') {
-
-          $('#avatar').addClass('backImageM');
-
-        } else {
-          $('#avatar').addClass('backImageF');
-        }
-
-        page.querySelector('#btn-nextComplete').onclick = function () {
-
-          // var userID = lastIndex + 1;
-          // var nickname = $('#nickname').val();
-          // var birthday = $('#birthday').val();
-          // var gender = $('input[name=gender]:checked').val();
-          // var area = $('#registration-area').val();
-          // var desc = $('textarea#aboutMe').val();
-          var desc = $('textarea#aboutMe').val();
-
-          firebase.database().ref('users/' + userID).set({
-            nickname: nickname,
-            birthday: birthday,
-            gender: gender,
-            area: area,
-            desc: desc,
-          });
-
-          // Reassign lastID value
-          // lastIndex = userID;
-          // $("#addUser input").val("");
-
-          document.querySelector('#myNavigator').pushPage('registration-complete.html');
-        }
-
-        lastIndex = userID;
-      }
-
-    });
-
-
-/* ons.bootstrap()
-  .controller('UsersController', function($scope) {
-    console.log('controller', $scope.myNavigator.topPage.data);
-
-    this.init = function(e) {
-      // Ensure the emitter is the current page, not a nested one
-      if (e.target === e.currentTarget) {
-        var page = e.target;
-        // Safely access data
-        console.log('init event', page.data);
-      }
-    };
-  }); */
-
-  /* ons.bootstrap().controller('UsersController', function(){
-    this.nickname = '';
-
-  });
- */
-  </script>
+  <script src="js/app.js"></script>
 
 </body>
 

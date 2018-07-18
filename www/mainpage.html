@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta http-equiv="Content-Security-Policy" content="img-src 'self' data:*; default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <!-- <meta http-equiv="Content-Security-Policy" content="img-src 'self' data:*; default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"> -->
   <!-- <script src="components/loader.js"></script>
     <script src="lib/onsenui/js/onsenui.min.js"></script>
     <script src="js/app.js"></script> -->
@@ -15,6 +15,10 @@
   <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
   <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
   <script src="js/moment-with-locales.js"></script>
+  <script src="js/jquery.charlimit.js"></script>
+  <!-- <script src="js/jquery.inputmask.js"></script>
+  <script src="js/jquery.inputmask.numeric.extensions.js"></script> -->
+
 
 
   <link rel="stylesheet" href="components/loader.css">
@@ -69,121 +73,123 @@
 
 
 <body>
-  <!--
-<ons-navigator id="myNavigator" page="mainpage.html" animation="slide"></ons-navigator> -->
 
-  <ons-page>
-    <ons-tabbar position="bottom">
-      <ons-tab icon="fa-compass" label="Search" page="tab1.html" active></ons-tab>
-      <ons-tab icon="ion-chatboxes" label="Messages" page="tab2.html"></ons-tab>
-      <ons-tab icon="md-face" label="Friends" page="tab3.html"></ons-tab>
-      <ons-tab icon="md-edit" label="Edit Profile" page="tab4.html"></ons-tab>
-    </ons-tabbar>
-  </ons-page>
+  <ons-navigator id="myNavigator" swipeable swipe-target-width="80px" page="mainpage.html" animation="slide">
+  <!-- <ons-navigator id="myNavigator" page="mainpage.html" animation="slide"> -->
 
-  <ons-template id="tab1.html">
-    <ons-navigator id="nav1" page="tab1.html">
-      <ons-page id="first-page">
-        <ons-toolbar>
-          <div class="header text-center text-primary">
-            <h3 class="toolbar-title" style="justify-content:center;">Search</h3>
-          </div>
-        </ons-toolbar>
+    <ons-page>
+      <ons-tabbar position="bottom">
+        <ons-tab icon="fa-compass" label="Search" page="tab1.html" active></ons-tab>
+        <ons-tab icon="ion-chatboxes" label="Messages" page="tab2.html"></ons-tab>
+        <ons-tab icon="md-face" label="Friends" page="tab3.html"></ons-tab>
+        <ons-tab icon="md-edit" label="Edit Profile" page="tab4.html"></ons-tab>
+      </ons-tabbar>
+    </ons-page>
 
-        <div class="width-half">
-          <div class="row">
-            <p class="font-weight-bold text-center text-primary">Gender</p>
+  </ons-navigator>
+
+  <template id="tab1.html">
+
+    <ons-page id="first-page">
+      <ons-toolbar>
+        <div class="header text-center text-primary">
+          <h3 class="toolbar-title" style="justify-content:center;">Search</h3>
+        </div>
+      </ons-toolbar>
+
+      <div class="width-half">
+        <div class="row">
+          <p class="font-weight-bold text-center text-primary">Gender</p>
+          <ons-row>
+            <ons-col width="55px"></ons-col>
+            <ons-col>
+              <ons-radio class="form-control gender width-half text-center" name="gender" style="padding: .5rem 0!important; margin: 0!important;"
+                checked value="Male">Male
+              </ons-radio>
+            </ons-col>
+            <ons-col>
+              <ons-radio class="form-control gender width-half text-center" name="gender" style="padding: .5rem 0!important;" value="Female">Female
+              </ons-radio>
+            </ons-col>
+            <ons-col width="55px"></ons-col>
+          </ons-row>
+        </div>
+      </div>
+
+      <hr>
+
+      <ons-row>
+        <ons-col>
+          <p class="text-center text-primary font-weight-bold">Age Range</p>
+          <div class="width-half text-center">
             <ons-row>
-              <ons-col width="55px"></ons-col>
               <ons-col>
-                <ons-radio class="form-control gender width-half text-center" name="gender" style="padding: .5rem 0!important; margin: 0!important;"
-                  checked value="Male">Male
-                </ons-radio>
+                <ons-input onkeypress='checkAgeLength()' id="minAge" min="18" max="100" pattern="[0-9]*" type="number" class="width-half float-right"
+                  modifier="material" placeholder="Min" maxlength="2" float aria-required="true">
               </ons-col>
+              <span class="text-primary font-weight-bold">&nbsp;&nbsp;&nbsp;~&nbsp;&nbsp;&nbsp;</span>
               <ons-col>
-                <ons-radio class="form-control gender width-half text-center" name="gender" style="padding: .5rem 0!important;" value="Female">Female
-                </ons-radio>
+                <ons-input onkeydown='checkAgeLength()' id="maxAge" min=18 max=100 pattern="[0-9]*" type="number" class="width-half float-left"
+                  modifier="material" placeholder="Max" float required>
               </ons-col>
-              <ons-col width="55px"></ons-col>
             </ons-row>
           </div>
-        </div>
+        </ons-col>
+      </ons-row>
 
-        <hr>
+      <hr>
 
-        <ons-row>
-          <ons-col>
-            <p class="text-center text-primary font-weight-bold">Age Range</p>
-            <div class="width-half text-center">
-              <ons-row>
-                <ons-col>
-                  <ons-input min="1" max="100" id="minAge" type="number" class="width-half float-right" modifier="material" placeholder="Min"
-                    float/>
-                </ons-col>
-                <span class="text-primary font-weight-bold">&nbsp;&nbsp;&nbsp;~&nbsp;&nbsp;&nbsp;</span>
-                <ons-col>
-                  <ons-input min="1" max="100" id="maxAge" type="number" class="width-half float-left" modifier="material" placeholder="Max"
-                    float/>
-                </ons-col>
-              </ons-row>
-            </div>
-          </ons-col>
-        </ons-row>
+      <ons-row>
+        <ons-col>
+          <p class="text-center text-primary font-weight-bold">Radius</p>
+          <div class="width-half text-center">
+            <ons-row>
+              <ons-col>
+                <ons-select class="select" id="radius">
+                  <!-- <select class="select-input"> -->
+                  <option>1 km</option>
+                  <option>2 km</option>
+                  <option>3 km</option>
+                  <!-- </select> -->
+                </ons-select>
+              </ons-col>
+            </ons-row>
+          </div>
+        </ons-col>
+      </ons-row>
 
-        <hr>
+      <hr/>
 
-        <ons-row>
-          <ons-col>
-            <p class="text-center text-primary font-weight-bold">Radius</p>
-            <div class="width-half text-center">
-              <ons-row>
-                <ons-col>
-                  <ons-select class="select" id="radius">
-                    <!-- <select class="select-input"> -->
-                    <option>1 km</option>
-                    <option>2 km</option>
-                    <option>3 km</option>
-                    <!-- </select> -->
-                  </ons-select>
-                </ons-col>
-              </ons-row>
-            </div>
-          </ons-col>
-        </ons-row>
-
-        <hr/>
-
-        <ons-row class="text-center width-90" style="margin-left: 1%!important;">
-          <ons-col>
-            <p class="text-center text-primary font-weight-bold">Message</p>
-            <div>
-              <ons-row>
-                <ons-col>
-                  <textarea style="background-color: white; width:90%; border-radius:15px;" class="textarea" rows="6" id="message"></textarea>
-                </ons-col>
-              </ons-row>
-            </div>
-          </ons-col>
-        </ons-row>
+      <ons-row class="text-center width-90" style="margin-left: 1%!important;">
+        <ons-col>
+          <p class="text-center text-primary font-weight-bold">Message</p>
+          <div>
+            <ons-row>
+              <ons-col>
+                <textarea style="background-color: white; width:90%; border-radius:15px;" class="textarea" rows="6" id="message"></textarea>
+              </ons-col>
+            </ons-row>
+          </div>
+        </ons-col>
+      </ons-row>
 
 
-        <ons-row class="text-center width-80" style="margin-left: 10%!important; margin-top: 5%!important;">
-          <ons-col>
-            <div class="width-half text-center">
-              <ons-row>
-                <ons-col>
-                  <ons-button id="btn-toGPS" class="text-center btn btn-block btn-info" style="width: 40%!important; margin-left: 30%!important;">Send
-                  </ons-button>
-                </ons-col>
-                <!--onclick="nav1.pushPage('toGPS-page.html')"-->
-              </ons-row>
-            </div>
-          </ons-col>
-        </ons-row>
+      <ons-row class="text-center width-80" style="margin-left: 10%!important; margin-top: 5%!important;">
+        <ons-col>
+          <div class="width-half text-center">
+            <ons-row>
+              <ons-col>
+                <ons-button id="btn-toGPS" class="text-center btn btn-block btn-info" style="width: 40%!important; margin-left: 30%!important;">Send
+                </ons-button>
+              </ons-col>
+              <!--onclick="nav1.pushPage('toGPS-page.html')"-->
+            </ons-row>
+          </div>
+        </ons-col>
+      </ons-row>
 
-      </ons-page>
-    </ons-navigator>
-  </ons-template>
+    </ons-page>
+  </template>
 
   <template id="toGPS-page.html">
     <ons-page>
@@ -206,69 +212,24 @@
   </template>
 
 
-  <ons-template id="tab2.html">
-    <ons-navigator id="nav2">
-      <ons-page id="second-page">
-        <ons-toolbar>
-          <div class="header text-center text-primary">
-            <h3 class="toolbar-title" style="justify-content:center;">Messages</h3>
-          </div>
-        </ons-toolbar>
-
-        <div id="messages-container">
-
-        </div>
-
-      </ons-page>
-
-
-  </ons-template>
-
-  <ons-template id="pushed-page.html">
-    <ons-page id="pushed-page">
+  <template id="tab2.html">
+    <ons-page id="second-page">
       <ons-toolbar>
-        <div class="left">
-          <ons-back-button>Back</ons-back-button>
-        </div>
-        <div class="center text-primary">
-          <h3>Chat History</h3>
+        <div class="header text-center text-primary">
+          <h3 class="toolbar-title" style="justify-content:center;">Messages</h3>
         </div>
       </ons-toolbar>
-      <h3 class="text-center">Transmission Details </h3>
-      <hr>
-      <div id="transdetails-container">
 
-        <div class="details" style="width:50%;float:left;margin-top:3%;">
-          <h6 id="details-date" class="text-center text-muted">Date </h6>
-        </div>
-
-        <div class="details" style="width:50%;float:left;margin-top:3%;">
-          <h6 id="details-time" class="text-center text-muted">Time </h6>
-        </div>
-
-        <div class="details" style="width:50%;float:left;margin-top:8%; line-height: 20%;">
-        <h6 id="details-gender" class="text-center text-muted">Gender </h6>
-        </div>
-
-        <div class="details" style="width:50%;float:left;margin-top:8%;">
-        <h6 id="details-age" class="text-center text-muted">Age </h6>
-        </div>
-
-        <div class="details" style="width:100%;float:left;margin-top:8%;">
-        <h6 id="details-radius" class="text-center text-muted">Radius</h6>
-        </div>
-
-        <div class="details text-center" style="width:100%;float:left;margin-top:8%;height:15vh;">
-        <h6 id="details-message" class="text-center text-muted">Message </h6>
-        <!-- Roses are Red. Violets are Blue. Wag Ban yAS BENTA KO TO -->
-        </div>
+      <div id="messages-container">
 
       </div>
 
     </ons-page>
-  </ons-template>
 
-  <ons-template id="tab3.html">
+
+  </template>
+
+  <template id="tab3.html">
     <ons-page id="third-page">
       <ons-toolbar>
         <div class="header text-center text-primary">
@@ -296,10 +257,9 @@
       <!--</div>-->
 
     </ons-page>
-    </ons-navigator>
-  </ons-template>
+  </template>
 
-  <ons-template id="tab4.html">
+  <template id="tab4.html">
     <ons-page id="fourth-page">
       <ons-toolbar>
         <div class="header text-center text-primary">
@@ -325,14 +285,14 @@
       <div class="row">
         <p class="text-muted text-center">Change your nickname</p>
         <div class="row text-center">
-          <ons-input class="onsInput" placeholder="Enter Nickname" modifier="material" float/>
+          <ons-input id="nickname" class="onsInput" placeholder="Enter Nickname" modifier="material" float/>
         </div>
       </div>
       <br/>
       <div class="row">
         <p class="text-muted text-center">Let's write about yourself.</p>
         <div class="text-center">
-          <textarea class="textarea onsInput" style="background-color: white; width:80%; border-radius:15px;" rows="8"></textarea>
+          <textarea id="desc" class="textarea onsInput" style="background-color: white; width:80%; border-radius:15px;" rows="8"></textarea>
         </div>
 
 
@@ -341,7 +301,8 @@
             <div class="width-half text-center" style=" text-align:center;">
               <ons-row>
                 <ons-col>
-                  <ons-button class="text-center btn btn-block btn-info" style="width: 40%!important; margin-left: 30%!important" id="btnSubmit">Save
+                  <ons-button class="text-center btn btn-block btn-info" onclick="updateData()" style="width: 40%!important; margin-left: 30%!important"
+                    id="btnSubmit">Save
                   </ons-button>
                 </ons-col>
               </ons-row>
@@ -351,13 +312,61 @@
 
       </div>
     </ons-page>
-  </ons-template>
+  </template>
+
+  <template id="pushed-page.html">
+      <!-- <ons-page id="pushed-page"> -->
+      <ons-page>
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button class="back-button">Back</ons-back-button>
+          </div>
+          <div class="center text-primary">
+            <h3>Chat History</h3>
+          </div>
+        </ons-toolbar>
+        <h3 class="text-center">Transmission Details </h3>
+        <hr>
+        <div id="transdetails-container">
+  
+          <div class="details" style="width:50%;float:left;margin-top:3%;">
+            <h6 id="details-date" class="text-center text-muted">Date </h6>
+          </div>
+  
+          <div class="details" style="width:50%;float:left;margin-top:3%;">
+            <h6 id="details-time" class="text-center text-muted">Time </h6>
+          </div>
+  
+          <div class="details" style="width:50%;float:left;margin-top:8%; line-height: 20%;">
+            <h6 id="details-gender" class="text-center text-muted">Gender </h6>
+          </div>
+  
+          <div class="details" style="width:50%;float:left;margin-top:8%;">
+            <h6 id="details-age" class="text-center text-muted">Age </h6>
+          </div>
+  
+          <div class="details" style="width:100%;float:left;margin-top:8%;">
+            <h6 id="details-radius" class="text-center text-muted">Radius</h6>
+          </div>
+  
+          <div class="details text-center" style="width:100%;float:left;margin-top:8%;height:15vh;">
+            <h6 id="details-message" class="text-center text-muted">Message </h6>
+            <!-- Roses are Red. Violets are Blue. Wag Ban yAS BENTA KO TO -->
+          </div>
+  
+        </div>
+  
+      </ons-page>
+    </template>
 
 </body>
 
 </html>
 
+
 <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+<script src="js/app.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
 <script>
   // Initialize Firebase
   var config = {
@@ -370,187 +379,4 @@
   };
   firebase.initializeApp(config);
 
-</script>
-
-
-<script type="text/javascript">
-
-  var rootRefForUsers = firebase.database().ref().child('users');
-  var lastIndex = 0;
-
-  rootRefForUsers.on("child_added", snap => {
-    var nickname = snap.child('nickname').val();
-    var area = snap.child('area').val();
-    var gender = snap.child('gender').val();
-
-    if (gender === 'Male') {
-      $("#friendlist-container").append('<div class="friendlist" style="width:100%; padding:2%; ">\n' +
-        '            <div class="friend1 rounded-circle backImageM"></div>\n' +
-        '            <h6 class="friend-details" style="margin-left:5%;">' + nickname + ' from ' + area + '</h6>\n' +
-        '            </div>\n');
-    } else {
-      $("#friendlist-container").append('<div class="friendlist" style="width:100%; padding:2%; ">\n' +
-        '            <div class="friend1 rounded-circle backImageF"></div>\n' +
-        '            <h6 class="friend-details" style="margin-left:5%;">' + nickname + ' from ' + area + '</h6>\n' +
-        '            </div>\n');
-    }
-
-  });
-
-  var rootRefForMessages = firebase.database().ref().child('transmissions');
-
-  rootRefForMessages.on("child_added", snap => {
-    var date = snap.child('date').val();
-    var time = snap.child('time').val();
-    var message = snap.child('message').val();
-    var gender = snap.child('gender').val();
-    var minAge = snap.child('minAge').val();
-    var maxAge = snap.child('maxAge').val();
-    var radius = snap.child('radius').val();
-
-
-    $("#messages-container").append('<div class="historylist" id="historylist"\n' +
-      '                     style="width:100%; height:8vh; line-height: 20%; padding:2%; margin-top:5%; display:inline-block; font-family:\'Courier New\', sans-serif;">\n' +
-      '\n' +
-      '                    <p class="history-details-date" style="float:left; margin-left:1%;font-weight:bold;">' + date + '</p>\n' +
-      '                    <p class="history-details-time" style="float:left; margin-left:10%;font-weight:bold;">' + time + '</p>\n' +
-      '                    <div style="width:70; overflow:hidden;float:left; padding:1.5%; ">\n' +
-      '                        <p class="history-details-message">' + message + '</p>\n' +
-      '                    </div>\n' +
-      '                    <ons-button id="btn-tohistorylist" onclick="showTransmission()"\n' +
-      '                                class="text-center btn btn-block btn-info"\n' +
-      '                                style="width: 20% !important; float:right;margin-right:.5%; margin-top:-6.5%;">View\n' +
-      '                    </ons-button>\n' +
-      '                </div>');
-
-  });
-
-
-
-
-  document.addEventListener("deviceready", onDeviceReady, false);
-
-  function onDeviceReady() {
-    console.log(navigator.camera);
-
-  }
-
-  document.addEventListener('show', function (event) {
-
-    var page = event.target;
-    var titleElement = document.querySelector('.toolbar-title');
-
-    if (page.matches('#first-page')) {
-      titleElement.innerHTML = 'Search';
-      if (page.id === 'first-page') {
-
-        page.querySelector('#btn-toGPS').onclick = function () {
-
-          var transID = lastIndex + 1;
-          var rawTime = moment().format('LT');
-          var rawDate = moment().format('LL');
-
-          // var userID = lastIndex + 1;
-          var gender = $('input[name=gender]:checked').val();
-          var minAge = $('#minAge').val();
-          var maxAge = $('#maxAge').val();
-          var radius = $('#radius').val();
-          var message = $('textarea#message').val();
-
-          firebase.database().ref('transmissions/' + transID).set({
-            gender: gender,
-            minAge: minAge,
-            maxAge: maxAge,
-            radius: radius,
-            message: message,
-            date: rawDate,
-            time: rawTime,
-
-          });
-
-          lastIndex = transID;
-
-          document.querySelector('#nav1').pushPage('toGPS-page.html');
-
-          // Reassign lastID value
-          // lastIndex = userID;
-          // $("#addUser input").val("");
-
-          // document.querySelector('#myNavigator').pushPage('registration-complete.html');
-        }
-      }
-    } else if (page.matches('#second-page')) {
-      titleElement.innerHTML = 'Chat History';
-
-      /*       var rootRef = firebase.database().ref().child('transmissions');
-
-            rootRef.on("child_added", snap => {
-              var name = snap.child
-            }); */
-
-    } else if (page.matches('#third-page')) {
-      titleElement.innerHTML = 'Friend List';
-
-    } else if (page.matches('#fourth-page')) {
-      titleElement.innerHTML = 'Profile';
-    }
-
-  });
-</script>
-<script>
-
-  document.addEventListener("deviceready", onDeviceReady, false);
-
-  function onDeviceReady() {
-    console.log(navigator.notification);
-  }
-
-  var showConfirm = function () {
-
-    ons.notification.confirm('Your message has been successfully sent!', {
-      buttonLabels: ['Home', 'Details'],
-      title: 'NowNow Complete'
-
-    })
-      .then(function (answer) {
-        if (answer == 0) {
-          window.location.href = 'mainpage.html';
-        }
-        else if (answer == 1) {
-          window.location.href = "nav2.pushPage('pushed-page.html')";
-
-
-        }
-      });
-
-  }
-
-  function showTransmission() {
-
-    document.querySelector('#nav2').pushPage('pushed-page.html');
-    ons.ready(function () {
-      document.querySelector('#nav2').addEventListener('postpush', function (event) {
-        // var rootRefForMessages = firebase.database().ref().child('transmissions/');
-        var rootRefForMessages = firebase.database().ref('transmissions').limitToLast(1);
-
-        rootRefForMessages.once("child_added", snap => {
-          var date = snap.child('date').val();
-          var time = snap.child('time').val();
-          var message = snap.child('message').val();
-          var gender = snap.child('gender').val();
-          var minAge = snap.child('minAge').val();
-          var maxAge = snap.child('maxAge').val();
-          var radius = snap.child('radius').val();
-          $('#details-date').append('<h5  class="text-center text-primary" style="line-height: 20%;">' + date + '</h5>');
-          $('#details-time').append('<h5 class="text-center text-primary" style="line-height: 20%;">'+ time +'</h5>');
-          $('#details-gender').append('<h5 class="text-center text-primary" style="line-height: 20%;">'+ gender +'</h5>');
-          $('#details-age').append('<h5 class="text-center text-primary" style="line-height: 20%;">'+ minAge +' - '+ maxAge +'</h5>');
-          $('#details-radius').append('<h5 class="text-center text-primary" style="line-height: 20%;">'+ radius +'</h5>');
-          $('#details-message').append('<h5 class="text-center" style="line-height: 30%; margin-top: 10%">'+ message +'</h5>');
-        }); 
-       
-      });
-    });
-  }
-
-</script>
+</script> -->
