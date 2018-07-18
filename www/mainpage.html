@@ -69,12 +69,29 @@
   .form-control:focus {
     background: blue;
   }
+
+    label.medupload{
+    width: 100px;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    background-image: linear-gradient(to bottom, #337ab7 0, #265a88 100%);
+  }
+
+  input#files{
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+    z-index: -1;
+  }
 </style>
 
 
 <body>
 
-  <ons-navigator id="myNavigator" swipeable swipe-target-width="80px" page="mainpage.html" animation="slide">
+  <ons-navigator id="myNavigator" swipeable swipe-target-width="80px" animation="slide">
   <!-- <ons-navigator id="myNavigator" page="mainpage.html" animation="slide"> -->
 
     <ons-page>
@@ -229,6 +246,7 @@
 
   </template>
 
+
   <template id="tab3.html">
     <ons-page id="third-page">
       <ons-toolbar>
@@ -259,6 +277,7 @@
     </ons-page>
   </template>
 
+
   <template id="tab4.html">
     <ons-page id="fourth-page">
       <ons-toolbar>
@@ -271,14 +290,14 @@
         <p class="text-muted text-center">Please create your user icon.</p>
         <center>
 
-          <img id="blah2" src="images/icons/radar.png" style="height:15vh; width:25%;border-radius:50%; ">
+          <img id="avatar" src="images/icons/radar.png" style="height:15vh; width:25%;border-radius:50%; ">
 
-          <div class="medupload">
+          <label class="medupload">
             <center>
-              <input type="file" onchange="document.getElementById('blah2').src = window.URL.createObjectURL(this.files[0])" name="image"
-                id="files">
+              Upload an Image
+              <input type="file" onchange="document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0])" name="image" id="files" class="medupload">
             </center>
-          </div>
+          </label>
         </center>
       </div>
       <br/>
@@ -315,8 +334,8 @@
   </template>
 
   <template id="pushed-page.html">
-      <!-- <ons-page id="pushed-page"> -->
-      <ons-page>
+      <ons-page id="pushed-page">
+      <!-- <ons-page> -->
         <ons-toolbar>
           <div class="left">
             <ons-back-button class="back-button">Back</ons-back-button>

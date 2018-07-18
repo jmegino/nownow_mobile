@@ -56,6 +56,21 @@
     letter-spacing: 2px;
 
   }
+
+  label.upload-group{
+    width: 100px;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    background-image: linear-gradient(to bottom, #337ab7 0, #265a88 100%);
+  }
+
+  input#file{
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+    z-index: -1;
+  }
 </style>
 
 <body>
@@ -256,6 +271,10 @@
           <!-- Modified style.css for male and female avatars -->
           <div id="avatar" class="rounded-circle">
           </div>
+          <label class="upload-group">
+            Upload Image
+            <input type="file" onchange="document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0])" class="upload-group" id="file">
+          </label>
         </center>
       </div>
       <br/>

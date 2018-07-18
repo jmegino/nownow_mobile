@@ -32,11 +32,25 @@ document.addEventListener('init', function (event) {
         }
     } else if (page.id === 'registration-nickname') {
         page.querySelector('#push-form').onsubmit = function () {
+
             if ($('#nickname').val() == '') {
                 ons.notification.alert("Please enter your nickname!");
                 return false;
             } else {
+                var regNewID = $('#nickname').val();
+                var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regNewID);
+                userRef.once("value")
+                    .then(function (snapshot) {
+                        var userData = snapshot.val();
+                        if (userData) {
+                            ons.notification.alert('Nickname already exists!');
+                        } else {
+                            document.querySelector('#myNavigator').pushPage('registration-age.html');
+                            
+                        }
+                    });
 
+                    return false;
                 // var userID = lastIndex+1;
 
                 // input data (start)
@@ -46,8 +60,7 @@ document.addEventListener('init', function (event) {
                 // lastIndex = userID;
                 // $("#addUser input").val("");
                 // input data (end)
-                document.querySelector('#myNavigator').pushPage('registration-age.html');
-                return false;
+
             }
         }
     } else if (page.id === 'registration-age') {
@@ -55,8 +68,18 @@ document.addEventListener('init', function (event) {
             if ($('#birthday').val() == '') {
                 ons.notification.alert("Please enter your birthday!");
             } else {
+                var validAge = $('#birthday').val();
+                validAge = new Date(validAge);
+                var today = new Date();
 
-                document.querySelector('#myNavigator').pushPage('registration-gender.html');
+                var age = Math.floor((today-validAge) / (365.25*24*60*60*1000));
+                if(age >= 18){
+                    document.querySelector('#myNavigator').pushPage('registration-gender.html');
+                }else{
+                    ons.notification.alert('Minors are not allowed!');
+                }
+
+                
             }
         }
     } else if (page.id === 'registration-gender') {
@@ -87,6 +110,10 @@ document.addEventListener('init', function (event) {
         page.querySelector('#btn-nextComplete').onclick = function () {
 
             document.querySelector('#myNavigator').pushPage('registration-complete.html');
+            
+            //Create a root reference in pictures
+            var storageRef = firebase.storage().ref('/profileImages/');
+            // var filename = 
 
             var database = firebase.database().ref();
             var userRef = database.child('users');
@@ -122,6 +149,9 @@ document.addEventListener('init', function (event) {
 
 });
 
+$('#file').on('change', function(event){
+    $('#')
+});
 
 /* ons.bootstrap()
 .controller('UsersController', function($scope) {
@@ -200,6 +230,7 @@ function validateAges() {
 
 var rootRef = firebase.database().ref();
 var userID = rootRef.child('users/').push().getKey();
+
 function updateData() {
 
 
@@ -266,78 +297,80 @@ function onDeviceReady() {
 
 }
 
-document.addEventListener('show', function (event) {
+// document.addEventListener('show', function (event) {
+document.addEventListener('init', function (event) {
 
     var page = event.target;
     var titleElement = document.querySelector('.toolbar-title');
 
-    if (page.matches('#first-page')) {
+
+    if (page.id === 'first-page') {
         titleElement.innerHTML = 'Search';
-        if (page.id === 'first-page') {
+        page.querySelector('#btn-toGPS').onclick = function () {
 
-            page.querySelector('#btn-toGPS').onclick = function () {
+            var database = firebase.database().ref();
+            var transRef = database.child('transmissions');
 
-                var database = firebase.database().ref();
-                var transRef = database.child('transmissions');
+            // var specifictransID = lastIndex + 1;
+            var rawTime = moment().format('LT');
+            var rawDate = moment().format('LL');
 
-                // var specifictransID = lastIndex + 1;
-                var rawTime = moment().format('LT');
-                var rawDate = moment().format('LL');
+            // var userID = lastIndex + 1;
+            var gender = $('input[name=gender]:checked').val();
+            var minAge = $('#minAge').val();
+            var maxAge = $('#maxAge').val();
+            var radius = $('#radius').val();
+            var message = $('textarea#message').val();
 
-                // var userID = lastIndex + 1;
-                var gender = $('input[name=gender]:checked').val();
-                var minAge = $('#minAge').val();
-                var maxAge = $('#maxAge').val();
-                var radius = $('#radius').val();
-                var message = $('textarea#message').val();
-
-                var specificnewtransID = transRef.push();
-                var specifictransID = specificnewtransID.key;
-                var specificspecifictransID = specifictransID.getKey;
+            var specificnewtransID = transRef.push();
+            // var specifictransID = specificnewtransID.key;
+            // var specifictransID = specifictransID.getKey;
 
 
-                if (maxAge < minAge) {
-                    ons.notification.alert('Invalid age range!');
-                } else if (maxAge > 100) {
-                    ons.notification.alert('Max age is 100!');
-                } else if (minAge < 18) {
-                    ons.notification.alert('Age must be 18 and above!');
-                } else {
-                    ons.notification.alert('oks');
-                    specificnewtransID.set({
-                        gender: gender,
-                        minAge: minAge,
-                        maxAge: maxAge,
-                        radius: radius,
-                        message: message,
-                        date: rawDate,
-                        time: rawTime
-                    });
+            if (maxAge < minAge || maxAge == minAge) {
+                ons.notification.alert('Invalid age range!');
+            } else if (maxAge > 100) {
+                ons.notification.alert('Max age is 100!');
+            } else if (minAge < 18) {
+                ons.notification.alert('Age must be 18 and above!');
+            } else {
+                ons.notification.alert('oks');
+                specificnewtransID.set({
+                    gender: gender,
+                    minAge: minAge,
+                    maxAge: maxAge,
+                    radius: radius,
+                    message: message,
+                    date: rawDate,
+                    time: rawTime
+                });
 
-                    // firebase.database().ref('transmissions/' + specifictransID).set({
-                    //   gender: gender,
-                    //   minAge: minAge,
-                    //   maxAge: maxAge,
-                    //   radius: radius,
-                    //   message: message,
-                    //   date: rawDate,
-                    //   time: rawTime,
+                // firebase.database().ref('transmissions/' + specifictransID).set({
+                //   gender: gender,
+                //   minAge: minAge,
+                //   maxAge: maxAge,
+                //   radius: radius,
+                //   message: message,
+                //   date: rawDate,
+                //   time: rawTime,
 
-                    // });
+                // });
 
-                    // lastIndex = specifictransID;
+                // lastIndex = specifictransID;
 
-                    document.querySelector('#nav1').pushPage('toGPS-page.html');
-                }
-                // Reassign lastID value
-                // lastIndex = userID;
-                // $("#addUser input").val("");
-
-                // document.querySelector('#myNavigator').pushPage('registration-complete.html');
+                document.querySelector('#myNavigator').pushPage('toGPS-page.html');
             }
+            // Reassign lastID value
+            // lastIndex = userID;
+            // $("#addUser input").val("");
+
+            // document.querySelector('#myNavigator').pushPage('registration-complete.html');
         }
-    } else if (page.matches('#second-page')) {
+    }
+    else if (page.id === 'second-page') {
         titleElement.innerHTML = 'Chat History';
+
+
         // $('div.historylist').click(function () {
         //     // console.log($(this).index() + 1);
         //     var element = $(this).index();
@@ -353,9 +386,9 @@ document.addEventListener('show', function (event) {
                 // console.log(snapshotToArray(snapshot)[0].key);
                 console.log(specifictransID);
                 document.querySelector('#myNavigator').pushPage('pushed-page.html');
+                // document.querySelector('#myNavigator').getPages()[0].destroy();
 
                 showTransmission(specifictransID);
-
 
             });
 
@@ -408,60 +441,46 @@ var showConfirm = function () {
 
 function showTransmission(specifictransID) {
 
-    ons.ready(function () {
-        document.querySelector('#myNavigator').addEventListener('postpush', function (event) {
+    document.querySelector('#myNavigator').addEventListener('postpush', function (event) {
 
-            // var transmissionListings = $('div.details').children();
-            // for(var i = 0; i< transmissionListings.length; i++){
-            //     if(transmissionListings.length >= 1){
-            //         console.log('sakto');
-            //     }
-            //     // transmissionListings[i].remove();
-            //     // console.log(transmissionListings);
-            // }
+        // var transmissionListings = $('div.details').children();
+        // for(var i = 0; i< transmissionListings.length; i++){
+        //     if(transmissionListings.length > 1){
+        //         console.log(transmissionListings.length);
+        //     }
+        //     // transmissionListings[i].remove();
+        //     // console.log(transmissionListings);
+        // }
 
-            // var rootRefForMessages = firebase.database().ref().child('transmissions/');
-            // var rootRefForMessages = firebase.database().ref();
+        var ref = firebase.database().ref('transmissions');
+        // specifictransID = "-LHX--CDpzSUJRJmykOc";
+        // ref.once('value')
+        ref.once('value')
+            .then(function (snapshot) {
+                var date = snapshot.child(specifictransID + '/date').val();
+                var time = snapshot.child(specifictransID + '/time').val();
+                var message = snapshot.child(specifictransID + '/message').val();
+                var gender = snapshot.child(specifictransID + '/gender').val();
+                var minAge = snapshot.child(specifictransID + '/minAge').val();
+                var maxAge = snapshot.child(specifictransID + '/maxAge').val();
+                var radius = snapshot.child(specifictransID + '/radius').val();
 
+                console.log(snapshotToArray(snapshot));
 
-            // rootRefForMessages.child('transmissions/-LHTe8zUroEDB7zTAACm').on("child_added", snap => {
-            //     var date = snap.child('date').val();
-            //     var time = snap.child('time').val();
-            //     var message = snap.child('message').val();
-            //     var gender = snap.child('gender').val();
-            //     var minAge = snap.child('minAge').val();
-            //     var maxAge = snap.child('maxAge').val();
-            //     var radius = snap.child('radius').val();
-            //     $('#details-date').append('<h5  class="text-center text-primary" style="line-height: 20%;">' + date + '</h5>');
-            //     $('#details-time').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + time + '</h5>');
-            //     $('#details-gender').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + gender + '</h5>');
-            //     $('#details-age').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + minAge + ' - ' + maxAge + '</h5>');
-            //     $('#details-radius').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + radius + '</h5>');
-            //     $('#details-message').append('<h5 class="text-center" style="line-height: 30%; margin-top: 10%">' + message + '</h5>');
-            // });
+                $('#details-date').append('<h5  class="text-center text-primary" style="line-height: 20%;">' + date + '</h5>');
+                $('#details-time').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + time + '</h5>');
+                $('#details-gender').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + gender + '</h5>');
+                $('#details-age').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + minAge + ' - ' + maxAge + '</h5>');
+                $('#details-radius').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + radius + '</h5>');
+                $('#details-message').append('<h5 class="text-center" style="line-height: 30%; margin-top: 10%">' + message + '</h5>');
 
-            var ref = firebase.database().ref('transmissions');
-            // specifictransID = "-LHX--CDpzSUJRJmykOc";
-            ref.once('value')
-                .then(function (snapshot) {
-                    var date = snapshot.child(specifictransID + '/date').val();
-                    var time = snapshot.child(specifictransID + '/time').val();
-                    var message = snapshot.child(specifictransID + '/message').val();
-                    var gender = snapshot.child(specifictransID + '/gender').val();
-                    var minAge = snapshot.child(specifictransID + '/minAge').val();
-                    var maxAge = snapshot.child(specifictransID + '/maxAge').val();
-                    var radius = snapshot.child(specifictransID + '/radius').val();
-
-                    $('#details-date').append('<h5  class="text-center text-primary" style="line-height: 20%;">' + date + '</h5>');
-                    $('#details-time').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + time + '</h5>');
-                    $('#details-gender').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + gender + '</h5>');
-                    $('#details-age').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + minAge + ' - ' + maxAge + '</h5>');
-                    $('#details-radius').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + radius + '</h5>');
-                    $('#details-message').append('<h5 class="text-center" style="line-height: 30%; margin-top: 10%">' + message + '</h5>');
-
+                document.querySelector('#myNavigator').addEventListener('prepop', function (event) {
+                    specifictransID = {}; //Shows individual messages but multiple errors in console
+                    // console.log(snapshotToArray(snapshot));
                 });
-        });
+            });
     });
+
 }
 
 function snapshotToArray(snapshot) {
