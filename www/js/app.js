@@ -46,11 +46,11 @@ document.addEventListener('init', function (event) {
                             ons.notification.alert('Nickname already exists!');
                         } else {
                             document.querySelector('#myNavigator').pushPage('registration-age.html');
-                            
+
                         }
                     });
 
-                    return false;
+                return false;
                 // var userID = lastIndex+1;
 
                 // input data (start)
@@ -72,14 +72,14 @@ document.addEventListener('init', function (event) {
                 validAge = new Date(validAge);
                 var today = new Date();
 
-                var age = Math.floor((today-validAge) / (365.25*24*60*60*1000));
-                if(age >= 18){
+                var age = Math.floor((today - validAge) / (365.25 * 24 * 60 * 60 * 1000));
+                if (age >= 18) {
                     document.querySelector('#myNavigator').pushPage('registration-gender.html');
-                }else{
+                } else {
                     ons.notification.alert('Minors are not allowed!');
                 }
 
-                
+
             }
         }
     } else if (page.id === 'registration-gender') {
@@ -101,19 +101,22 @@ document.addEventListener('init', function (event) {
 
         if (gender == 'Male') {
 
-            $('#avatar').addClass('backImageM');
-
+            $("#avatar").attr("src", "images/icons/defaultMale.png");
         } else {
-            $('#avatar').addClass('backImageF');
+            $("#avatar").attr("src", "images/icons/defaultFemale.png");
         }
+
+
+        $('#file-input').on('change', function (event) {
+            document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0]);
+            selectedFile = event.target.files[0];
+            console.log(selectedFile);
+            // onchange="document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0]); selectedFile = event.target.files[0];"
+        });
 
         page.querySelector('#btn-nextComplete').onclick = function () {
 
-            document.querySelector('#myNavigator').pushPage('registration-complete.html');
-            
-            //Create a root reference in pictures
-            var storageRef = firebase.storage().ref('/profileImages/');
-            // var filename = 
+            // document.querySelector('#myNavigator').pushPage('registration-complete.html');
 
             var database = firebase.database().ref();
             var userRef = database.child('users');
@@ -123,6 +126,79 @@ document.addEventListener('init', function (event) {
             var newuserID = userRef.push();
             var userID = newuserID.key;
 
+            if ($('#file-input')[0].files.length == 0) {
+                if (gender == 'Male') {
+                    var storageRef = firebase.storage().ref('/profileImages/defaultMale.png');
+                } else {
+                    var storageRef = firebase.storage().ref('/profileImages/defaultFemale.png');
+                }
+                storageRef.getDownloadURL().then(function (downloadURL) {
+                    newuserID.set({
+                        nickname: nickname,
+                        birthday: birthday,
+                        gender: gender,
+                        desc: desc,
+                        area: area,
+                        url: downloadURL,
+                        regTime: moment().format('LT'),
+                        regDate: moment().format('LL')
+                    });
+                });
+            } else {
+                console.log('picture present');
+                //Create a root reference in pictures
+                var filename = selectedFile.name;
+                var storageRef = firebase.storage().ref('/profileImages/' + filename);
+                var uploadTask = storageRef.put(selectedFile);
+
+                // Register three observers:
+                // 1. 'state_changed' observer, called any time the state changes
+                // 2. Error observer, called on failure
+                // 3. Completion observer, called on successful completion
+                uploadTask.on('state_changed', function (snapshot) {
+                    // Observe state change events such as progress, pause, and resume
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED: // or 'paused'
+                            console.log('Upload is paused');
+                            break;
+                        case firebase.storage.TaskState.RUNNING: // or 'running'
+                            console.log('Upload is running');
+                            break;
+                    }
+                }, function (error) {
+                    // Handle unsuccessful uploads
+                }, function () {
+                    // Handle successful uploads on complete
+                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                    uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                        // console.log('File available at', downloadURL);
+
+                        newuserID.set({
+                            nickname: nickname,
+                            birthday: birthday,
+                            gender: gender,
+                            desc: desc,
+                            area: area,
+                            url: downloadURL,
+                            regTime: moment().format('LT'),
+                            regDate: moment().format('LL')
+                        });
+                    });
+                });
+
+            }
+            document.querySelector('#myNavigator').pushPage('registration-complete.html');
+            // var database = firebase.database().ref();
+            // var userRef = database.child('users');
+
+            // var desc = $('textarea#aboutMe').val();
+
+            // var newuserID = userRef.push();
+            // var userID = newuserID.key;
+
             // firebase.database().ref('users/' + userID).set({
             //   nickname: nickname,
             //   birthday: birthday,
@@ -131,13 +207,14 @@ document.addEventListener('init', function (event) {
             //   desc: desc,
             // });
 
-            newuserID.set({
-                nickname: nickname,
-                birthday: birthday,
-                gender: gender,
-                desc: desc,
-                area: area
-            });
+            // newuserID.set({
+            //     nickname: nickname,
+            //     birthday: birthday,
+            //     gender: gender,
+            //     desc: desc,
+            //     area: area,
+            //     url: downloadURL
+            // });
 
             // Reassign lastID value
             // lastIndex = userID;
@@ -147,10 +224,6 @@ document.addEventListener('init', function (event) {
         }
     }
 
-});
-
-$('#file').on('change', function(event){
-    $('#')
 });
 
 /* ons.bootstrap()

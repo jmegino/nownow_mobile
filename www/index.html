@@ -4,7 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"> -->
   <!-- Removing this meta resolves uploading the profile picture -->
 
 
@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
   <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
   <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+  <script src="js/moment-with-locales.js"></script>
 
   <link rel="stylesheet" href="components/loader.css">
   <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
@@ -57,7 +58,7 @@
 
   }
 
-  label.upload-group{
+  label.upload-group {
     width: 100px;
     color: white;
     padding: 5px;
@@ -65,7 +66,7 @@
     background-image: linear-gradient(to bottom, #337ab7 0, #265a88 100%);
   }
 
-  input#file{
+  input#file {
     width: 0.1px;
     height: 0.1px;
     position: absolute;
@@ -268,14 +269,26 @@
       <div class="row">
         <p class="text-muted text-center">Please create your user icon.</p>
         <center>
-          <!-- Modified style.css for male and female avatars -->
-          <div id="avatar" class="rounded-circle">
-          </div>
-          <label class="upload-group">
-            Upload Image
-            <input type="file" onchange="document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0])" class="upload-group" id="file">
-          </label>
+
+            <img id="avatar" src="" style="height:15vh; width:25%;border-radius:50%; ">
+            <center>
+              <label for="file-input">
+                <img src="images/icons/camera.jpg" style="height:5vh; width:5vh; border-radius:50%; position: absolute; top:9%; right: 35%;" />
+  
+  
+                <input id="file-input" type="file" style="display: none; " />
+  
+                <!-- Upload an Image -->
+                <!-- <input type="file" onchange="document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0])" name="image"
+                  id="files" class="medupload"> -->
+  
+              </label>
+            </center>
+
         </center>
+      </div>
+
+      </center>
       </div>
       <br/>
 
@@ -338,7 +351,7 @@
     };
     firebase.initializeApp(config);
   </script> -->
-  
+
   <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
   <script src="js/app.js"></script>
 
