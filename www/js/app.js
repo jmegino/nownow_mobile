@@ -1,4 +1,3 @@
-
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyDG4VV3dVvUT4njZroBLRTPlRr1pmnN1os",
@@ -10,11 +9,12 @@ var config = {
 };
 firebase.initializeApp(config);
 
+//Initialize DOM
 document.addEventListener('init', function (event) {
 
     var page = event.target;
 
-    if (page.id === 'index') {
+    if (page.id === 'index') { //page.id is ons-page of every template in html
         page.querySelector('#push-button').onclick = function () {
 
             ons.notification.alert("This application uses GPS.<br> \
@@ -29,8 +29,8 @@ document.addEventListener('init', function (event) {
                 ons.notification.alert("Please enter your nickname!");
                 return false;
             } else {
-                var regNewID = $('#nickname').val();
-                var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regNewID);
+                var regNewID = $('#nickname').val(); //takes user input nickname
+                var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regNewID); //access firebase with the given input
                 userRef.once("value")
                     .then(function (snapshot) {
                         var userData = snapshot.val();
@@ -52,8 +52,8 @@ document.addEventListener('init', function (event) {
                 ons.notification.alert("Please enter your birthday!");
             } else {
                 var validAge = $('#birthday').val();
-                validAge = new Date(validAge);
-                var today = new Date();
+                validAge = new Date(validAge); //assigns user date using Date class
+                var today = new Date(); // assigns the date today
 
                 var age = Math.floor((today - validAge) / (365.25 * 24 * 60 * 60 * 1000));
                 if (age >= 18) {
@@ -75,47 +75,45 @@ document.addEventListener('init', function (event) {
         }
     } else if (page.id === 'registration-bio') {
 
-        // var userID = lastIndex + 1;
+        //Assigning of variables must be in last page of inputting data
         var nickname = $('#nickname').val();
         var birthday = $('#birthday').val();
         var gender = $('input[name=gender]:checked').val();
         var area = $('#registration-area').val();
 
-
+        //Show default avatar based on gender
         if (gender == 'Male') {
-
             $("#avatar").attr("src", "images/icons/defaultMale.png");
         } else {
             $("#avatar").attr("src", "images/icons/defaultFemale.png");
         }
 
-
+        //If user decides to change avatar
         $('#file-input').on('change', function (event) {
             document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0]);
             selectedFile = event.target.files[0];
             console.log(selectedFile);
-            // onchange="document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0]); selectedFile = event.target.files[0];"
         });
 
         page.querySelector('#btn-nextComplete').onclick = function () {
-
-            // document.querySelector('#myNavigator').pushPage('registration-complete.html');
 
             var database = firebase.database().ref();
             var userRef = database.child('users');
 
             var desc = $('textarea#aboutMe').val();
 
-            var newuserID = userRef.push();
-            var userID = newuserID.key;
+            var newuserID = userRef.push(); //assign a key to this user 
+            // var userID = newuserID.key;
 
-            if ($('#file-input')[0].files.length == 0) {
+
+            //Checks if user decides to change avatar
+            if ($('#file-input')[0].files.length == 0) { 
                 if (gender == 'Male') {
                     var storageRef = firebase.storage().ref('/profileImages/defaultMale.png');
                 } else {
                     var storageRef = firebase.storage().ref('/profileImages/defaultFemale.png');
                 }
-                storageRef.getDownloadURL().then(function (downloadURL) {
+                storageRef.getDownloadURL().then(function (downloadURL) { //gets the download URL of the default avatar
                     newuserID.set({
                         nickname: nickname,
                         birthday: birthday,
@@ -128,8 +126,7 @@ document.addEventListener('init', function (event) {
                         approved: 0
                     });
                 });
-            } else {
-                console.log('picture present');
+            } else { 
                 //Create a root reference in pictures
                 var filename = selectedFile.name;
                 var storageRef = firebase.storage().ref('/profileImages/' + nickname + filename);
@@ -192,16 +189,15 @@ document.addEventListener('init', function (event) {
 });
 
 // Testing
+// Works outside init function
 firebase.database().ref().child('transmissions').on('value', function (snapshot) {
     $('div.historylist').click(function () {
-        // console.log($(this).index() + 1);
         var element = $(this).index();
 
         var specifictransID = snapshotToArray(snapshot)[element].key;
-        // console.log(snapshotToArray(snapshot)[0].key);
+    
         console.log(specifictransID);
         document.querySelector('#myNavigator').pushPage('pushed-page.html');
-        // document.querySelector('#myNavigator').getPages()[0].destroy();
 
         showTransmission(specifictransID);
 
@@ -209,7 +205,7 @@ firebase.database().ref().child('transmissions').on('value', function (snapshot)
 
 });
 
-// Validation script
+// Validation scripts
 
 function checkAgeLength() {
 
@@ -222,7 +218,6 @@ function checkAgeLength() {
     }
 }
 
-
 function validateAges() {
 
     if ($('#minAge').val() < 18) {
@@ -230,10 +225,11 @@ function validateAges() {
     }
 }
 
+//End Validation Scripts
 
 var rootRefForUsers = firebase.database().ref().child('users');
 
-rootRefForUsers.on("child_added", snap => {
+rootRefForUsers.on("child_added", snap => { //shows all users 
     var nickname = snap.child('nickname').val();
     var area = snap.child('area').val();
     var gender = snap.child('gender').val();
@@ -254,15 +250,10 @@ rootRefForUsers.on("child_added", snap => {
 
 var rootRefForMessages = firebase.database().ref().child('transmissions');
 
-rootRefForMessages.on("child_added", snap => {
+rootRefForMessages.on("child_added", snap => { //shows all transmissions
     var date = snap.child('date').val();
     var time = snap.child('time').val();
     var message = snap.child('message').val();
-    var gender = snap.child('gender').val();
-    var minAge = snap.child('minAge').val();
-    var maxAge = snap.child('maxAge').val();
-    var radius = snap.child('radius').val();
-
 
     $("#messages-container").append('<div class="historylist"\n' +
         '                     style="width:100%; height:8vh; line-height: 20%; padding:2%; margin-top:5%; display:inline-block; font-family:\'Courier New\', sans-serif;">\n' +
@@ -287,7 +278,7 @@ function onDeviceReady() {
 
 }
 
-document.addEventListener('show', function (event) {
+document.addEventListener('show', function (event) { //initiates on showing individual pages
     // document.addEventListener('init', function (event) {
 
 
@@ -295,41 +286,23 @@ document.addEventListener('show', function (event) {
     var titleElement = document.querySelector('.toolbar-title');
 
     if (page.matches('#first-page')) {
-        var userID = firebase.database().ref().child('users').getKey();
-        console.log(userID);
 
-        var userNickname = $(document).getUrlParam('Nickname');
+        var userNickname = $(document).getUrlParam('Nickname'); //method is from jquery plugin (getUrlParam)
         console.log(userNickname);
 
         firebase.database().ref().child('users').orderByChild('nickname').equalTo(userNickname).on('value', function (snapshot) {
-            var imgSrc = snapshotToArray(snapshot)[0].url;
+            
+            //assign variables from the specific nickname
+            var imgSrc = snapshotToArray(snapshot)[0].url; 
             var userKey = snapshotToArray(snapshot)[0].key;
 
             window.setUserKey = function () {
                 return userKey;
             }
 
-            // console.log(userKey);
-
-            $("#avatar").attr("src", imgSrc);
+            $("#avatar").attr("src", imgSrc); //overwrites src attribute 
 
         });
-
-
-
-        // firebase.database().ref().child('users').orderByChild('nickname').equalTo(userNickname).once('value')
-        //     .then(function (snapshot) {
-        //         var imgSrc = snapshotToArray(snapshot)[0].url;
-        //         var userKey = snapshotToArray(snapshot)[0].key;
-
-        //         window.setUserKey = function () {
-        //             return userKey;
-        //         }
-
-        //         // console.log(userKey);
-
-        //         $("#avatar").attr("src", imgSrc);
-        //     });
 
         // titleElement.innerHTML = 'Search';
         page.querySelector('#btn-toGPS').onclick = function () {
@@ -337,22 +310,16 @@ document.addEventListener('show', function (event) {
             var database = firebase.database().ref();
             var transRef = database.child('transmissions');
 
-            // var specifictransID = lastIndex + 1;
-            // var rawTime = moment().format('LT');
-            // var rawDate = moment().format('LL');
-
-            // var userID = lastIndex + 1;
+            //Takes user inputs in search module
             var gender = $('input[name=gender]:checked').val();
             var minAge = $('#minAge').val();
             var maxAge = $('#maxAge').val();
             var radius = $('#radius').val();
             var message = $('textarea#message').val();
 
-            var specificnewtransID = transRef.push();
-            // var specifictransID = specificnewtransID.key;
-            // var specifictransID = specifictransID.getKey;
+            var specificnewtransID = transRef.push(); //generates new transmission ID
 
-
+            // Validation for age range
             if (maxAge < minAge || maxAge == minAge) {
                 ons.notification.alert('Invalid age range!');
             } else if (maxAge > 100) {
@@ -360,8 +327,7 @@ document.addEventListener('show', function (event) {
             } else if (minAge < 18) {
                 ons.notification.alert('Age must be 18 and above!');
             } else {
-                ons.notification.alert('oks');
-                specificnewtransID.set({
+                specificnewtransID.set({ // inserts transmission data to Firebase
                     gender: gender,
                     minAge: minAge,
                     maxAge: maxAge,
@@ -371,57 +337,23 @@ document.addEventListener('show', function (event) {
                     time: moment().format('LL')
                 });
 
-                // firebase.database().ref('transmissions/' + specifictransID).set({
-                //   gender: gender,
-                //   minAge: minAge,
-                //   maxAge: maxAge,
-                //   radius: radius,
-                //   message: message,
-                //   date: rawDate,
-                //   time: rawTime,
-
-                // });
-
-                // lastIndex = specifictransID;
-
                 document.querySelector('#myNavigator').pushPage('toGPS-page.html');
             }
-            // Reassign lastID value
-            // lastIndex = userID;
-            // $("#addUser input").val("");
 
-            // document.querySelector('#myNavigator').pushPage('registration-complete.html');
         }
     }
     else if (page.matches('#second-page')) {
-        // titleElement.innerHTML = 'Chat History';
-
-
-        // $('div.historylist').click(function () {
-        //     // console.log($(this).index() + 1);
-        //     var element = $(this).index();
-        // });
-
-
-        /*       var rootRef = firebase.database().ref().child('transmissions');
-    
-              rootRef.on("child_added", snap => {
-                var name = snap.child
-              }); */
-
-
 
     } else if (page.matches('#third-page')) {
         // titleElement.innerHTML = 'Friend List';
 
     } else if (page.matches('#fourth-page')) {
         // titleElement.innerHTML = 'Profile';
-        var userKey = setUserKey();
+        var userKey = setUserKey(); //requires manual navigation to first-page for this function to work
         console.log(userKey);
-        showProfile(userKey);
+        showProfile(userKey); 
 
         page.querySelector('#btnSubmit').onclick = function () {
-
             updateProfile(userKey);
         }
 
@@ -448,8 +380,6 @@ var showConfirm = function () {
             }
             else if (answer == 1) {
                 window.location.href = "myNavigator.pushPage('pushed-page.html')";
-
-
             }
         });
 
@@ -457,13 +387,12 @@ var showConfirm = function () {
 
 function showTransmission(specifictransID) {
 
-    document.querySelector('#myNavigator').addEventListener('postpush', function (event) {
+    document.querySelector('#myNavigator').addEventListener('postpush', function (event) { //occurs after navigating to pushed-page
 
         var ref = firebase.database().ref('transmissions');
-        // specifictransID = "-LHX--CDpzSUJRJmykOc";
-        // ref.once('value')
+        
         ref.once('value')
-            .then(function (snapshot) {
+            .then(function (snapshot) { //shows individual details in messages
                 var date = snapshot.child(specifictransID + '/date').val();
                 var time = snapshot.child(specifictransID + '/time').val();
                 var message = snapshot.child(specifictransID + '/message').val();
@@ -471,8 +400,6 @@ function showTransmission(specifictransID) {
                 var minAge = snapshot.child(specifictransID + '/minAge').val();
                 var maxAge = snapshot.child(specifictransID + '/maxAge').val();
                 var radius = snapshot.child(specifictransID + '/radius').val();
-
-                console.log(snapshotToArray(snapshot));
 
                 $('#details-date').append('<h5  class="text-center text-primary" style="line-height: 20%;">' + date + '</h5>');
                 $('#details-time').append('<h5 class="text-center text-primary" style="line-height: 20%;">' + time + '</h5>');
@@ -490,17 +417,19 @@ function showTransmission(specifictransID) {
 
 }
 
-function updateProfile(userKey, imgSrc) {
+
+// function updateProfile(userKey, imgSrc) {
+function updateProfile(userKey) { //occurs when done button is clicked in edit profile
 
     if ($('#nickname').val() == '') {
         ons.notification.alert("Please enter a new nickname!");
         return false;
     } else {
-        var regNewID = $('#nickname').val();
-        var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regNewID);
+        var regNewNickname = $('#nickname').val();
+        var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regNewNickname);
         userRef.once("value")
             .then(function (snapshot) {
-                var userData = snapshot.val();
+                var userData = snapshot.val(); //gets specific nickname Object
                 console.log();
                 if (userData) {
                     ons.notification.alert('Nickname already exists!');
@@ -510,15 +439,11 @@ function updateProfile(userKey, imgSrc) {
                     data = { nickname, desc }
                     firebase.database().ref().child('users/' + userKey).update(data);
                     console.log(data);
-                    setTimeout(function () {
+                    setTimeout(function () { //needs preloader or toast notification that profile is successfully updated
                         window.location.href = "mainpage.html?Nickname=" + nickname;
-                       
+
                     }, 2000);
 
-
-
-
-                    // $('#nickname').val('Hello World'); //Shows data in textbox
                 }
             });
 
@@ -529,14 +454,15 @@ function updateProfile(userKey, imgSrc) {
 }
 
 function showProfile(userKey) {
-    firebase.database().ref('users').once('value')
-        .then(function (snapshot) {
-            var nickname = snapshot.child(userKey + '/nickname').val();
-            var desc = snapshot.child(userKey + '/desc').val();
+    firebase.database().ref('users').on('value', function(snapshot){ //shows current user data in Edit Profile
+        var nickname = snapshot.child(userKey + '/nickname').val();
+        var desc = snapshot.child(userKey + '/desc').val();
 
-            $('#nickname').val(nickname);
-            $('#desc').val(desc);
-        });
+        $('#nickname').val(nickname);
+        $('#desc').val(desc);
+    
+    });      
+        
 }
 
 function snapshotToArray(snapshot) {
