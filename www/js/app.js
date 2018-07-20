@@ -124,7 +124,8 @@ document.addEventListener('init', function (event) {
                         area: area,
                         url: downloadURL,
                         regTime: moment().format('LT'),
-                        regDate: moment().format('LL')
+                        regDate: moment().format('LL'),
+                        approved: 0
                     });
                 });
             } else {
@@ -174,7 +175,9 @@ document.addEventListener('init', function (event) {
                             area: area,
                             url: downloadURL,
                             regTime: moment().format('LT'),
-                            regDate: moment().format('LL')
+                            regDate: moment().format('LL'),
+                            approved: 0
+
                         });
                     });
                 });
@@ -185,8 +188,26 @@ document.addEventListener('init', function (event) {
         }
     }
 
+
 });
 
+// Testing
+firebase.database().ref().child('transmissions').on('value', function (snapshot) {
+    $('div.historylist').click(function () {
+        // console.log($(this).index() + 1);
+        var element = $(this).index();
+
+        var specifictransID = snapshotToArray(snapshot)[element].key;
+        // console.log(snapshotToArray(snapshot)[0].key);
+        console.log(specifictransID);
+        document.querySelector('#myNavigator').pushPage('pushed-page.html');
+        // document.querySelector('#myNavigator').getPages()[0].destroy();
+
+        showTransmission(specifictransID);
+
+    });
+
+});
 
 // Validation script
 
@@ -209,19 +230,6 @@ function validateAges() {
     }
 }
 
-
-
-var rootRef = firebase.database().ref();
-var userID = rootRef.child('users/').push().getKey();
-
-function updateData() {
-
-    nickname = $('#nickname').val();
-    desc = $('#desc').val();
-    data = { nickname, desc, userID }
-    // rootRef.child('users/'+userID).update(data);
-    console.log(data);
-}
 
 var rootRefForUsers = firebase.database().ref().child('users');
 
@@ -279,23 +287,51 @@ function onDeviceReady() {
 
 }
 
-// document.addEventListener('show', function (event) {
-document.addEventListener('init', function (event) {
+document.addEventListener('show', function (event) {
+    // document.addEventListener('init', function (event) {
+
 
     var page = event.target;
     var titleElement = document.querySelector('.toolbar-title');
 
-    if (page.id === 'first-page') {
+    if (page.matches('#first-page')) {
+        var userID = firebase.database().ref().child('users').getKey();
+        console.log(userID);
+
         var userNickname = $(document).getUrlParam('Nickname');
         console.log(userNickname);
-        
-        firebase.database().ref().child('users').orderByChild('nickname').equalTo(userNickname).once('value')
-        .then(function(snapshot){
+
+        firebase.database().ref().child('users').orderByChild('nickname').equalTo(userNickname).on('value', function (snapshot) {
             var imgSrc = snapshotToArray(snapshot)[0].url;
-            console.log(imgSrc);
+            var userKey = snapshotToArray(snapshot)[0].key;
+
+            window.setUserKey = function () {
+                return userKey;
+            }
+
+            // console.log(userKey);
+
             $("#avatar").attr("src", imgSrc);
+
         });
-        titleElement.innerHTML = 'Search';
+
+
+
+        // firebase.database().ref().child('users').orderByChild('nickname').equalTo(userNickname).once('value')
+        //     .then(function (snapshot) {
+        //         var imgSrc = snapshotToArray(snapshot)[0].url;
+        //         var userKey = snapshotToArray(snapshot)[0].key;
+
+        //         window.setUserKey = function () {
+        //             return userKey;
+        //         }
+
+        //         // console.log(userKey);
+
+        //         $("#avatar").attr("src", imgSrc);
+        //     });
+
+        // titleElement.innerHTML = 'Search';
         page.querySelector('#btn-toGPS').onclick = function () {
 
             var database = firebase.database().ref();
@@ -357,32 +393,14 @@ document.addEventListener('init', function (event) {
             // document.querySelector('#myNavigator').pushPage('registration-complete.html');
         }
     }
-    else if (page.id === 'second-page') {
-        titleElement.innerHTML = 'Chat History';
+    else if (page.matches('#second-page')) {
+        // titleElement.innerHTML = 'Chat History';
 
 
         // $('div.historylist').click(function () {
         //     // console.log($(this).index() + 1);
         //     var element = $(this).index();
         // });
-
-        // Testing
-        firebase.database().ref().child('transmissions').on('value', function (snapshot) {
-            $('div.historylist').click(function () {
-                // console.log($(this).index() + 1);
-                var element = $(this).index();
-
-                var specifictransID = snapshotToArray(snapshot)[element].key;
-                // console.log(snapshotToArray(snapshot)[0].key);
-                console.log(specifictransID);
-                document.querySelector('#myNavigator').pushPage('pushed-page.html');
-                // document.querySelector('#myNavigator').getPages()[0].destroy();
-
-                showTransmission(specifictransID);
-
-            });
-
-        });
 
 
         /*       var rootRef = firebase.database().ref().child('transmissions');
@@ -394,14 +412,22 @@ document.addEventListener('init', function (event) {
 
 
     } else if (page.matches('#third-page')) {
-        titleElement.innerHTML = 'Friend List';
+        // titleElement.innerHTML = 'Friend List';
 
     } else if (page.matches('#fourth-page')) {
-        titleElement.innerHTML = 'Profile';
+        // titleElement.innerHTML = 'Profile';
+        var userKey = setUserKey();
+        console.log(userKey);
+        showProfile(userKey);
+
+        page.querySelector('#btnSubmit').onclick = function () {
+
+            updateProfile(userKey);
+        }
+
     }
 
 });
-
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -462,6 +488,55 @@ function showTransmission(specifictransID) {
             });
     });
 
+}
+
+function updateProfile(userKey, imgSrc) {
+
+    if ($('#nickname').val() == '') {
+        ons.notification.alert("Please enter a new nickname!");
+        return false;
+    } else {
+        var regNewID = $('#nickname').val();
+        var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regNewID);
+        userRef.once("value")
+            .then(function (snapshot) {
+                var userData = snapshot.val();
+                console.log();
+                if (userData) {
+                    ons.notification.alert('Nickname already exists!');
+                } else {
+                    nickname = $('#nickname').val();
+                    desc = $('#desc').val();
+                    data = { nickname, desc }
+                    firebase.database().ref().child('users/' + userKey).update(data);
+                    console.log(data);
+                    setTimeout(function () {
+                        window.location.href = "mainpage.html?Nickname=" + nickname;
+                       
+                    }, 2000);
+
+
+
+
+                    // $('#nickname').val('Hello World'); //Shows data in textbox
+                }
+            });
+
+        return false;
+
+    }
+
+}
+
+function showProfile(userKey) {
+    firebase.database().ref('users').once('value')
+        .then(function (snapshot) {
+            var nickname = snapshot.child(userKey + '/nickname').val();
+            var desc = snapshot.child(userKey + '/desc').val();
+
+            $('#nickname').val(nickname);
+            $('#desc').val(desc);
+        });
 }
 
 function snapshotToArray(snapshot) {
