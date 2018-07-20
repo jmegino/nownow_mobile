@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
-  
-  
+
+
 
   <link rel="stylesheet" href="css/style.css">
   <!-- <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
@@ -11,7 +12,7 @@
   <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
   <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
 
-  
+
   <link rel="stylesheet" href="components/loader.css">
   <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
   <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
@@ -19,108 +20,132 @@
 </head>
 
 <style>
-  
+  #push-button {
+    width: 60%;
+    border-radius: 15px;
 
-  #push-button{
-    width                           :60%;
-    border-radius                   :15px;
-    
-    padding                         :2%;
+    padding: 2%;
 
   }
 
-    .image-login{
-        display                     :block;
-        height                      :25vh;
-        margin-left                 :auto;
-        margin-right                :auto;
-    }
+  .image-login {
+    display: block;
+    height: 25vh;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    .logo{
-        display                     :block;
-        height                      :10vh;
-        width                       :85%; 
-        margin-left                 :auto;
-        margin-right                :auto;
-    }
+  .logo {
+    display: block;
+    height: 10vh;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    .button-logo{
-        margin-top                  :5%; 
-    }
+  .button-logo {
+    margin-top: 5%;
+  }
 
-    #push-form{
+  #push-form {
 
-        padding                     :2%;
-        padding-bottom              :5%; 
-    }
- 
-
- 
- 
-  
- 
+    padding: 2%;
+    padding-bottom: 5%;
+  }
 </style>
 
 <body>
 
-<ons-navigator swipeable id="myNavigator" page="index.html" animation="slide"></ons-navigator>
+  <ons-navigator swipeable id="myNavigator" page="index.html" animation="slide"></ons-navigator>
 
-<template id="index.html"> <!--FirstPage-->
-  <ons-page id="index">
-    <div class="logo-container">
-      <img class="image-login" align="center" src="images/icons/loginpage.png"/>
-      <img class="logo" src="images/icons/logo.png"/>
-      <h3 class="caption text-center">Connect to people nearby</h3>
-      
-    </div>
+  <template id="index.html">
+    <!--FirstPage-->
+    <ons-page id="index">
+      <div class="logo-container">
+        <img class="image-login" align="center" src="images/icons/loginpage.png" />
+        <img class="logo" src="images/icons/logo.png" />
+        <h3 class="caption text-center">Connect to people nearby</h3>
 
-    
-    
-    <div class="button-logo">
+      </div>
+
+
+
+      <div class="button-logo">
         <form id="push-form" class="text-center">
-            <ons-input style="text-align:center;" type="password" id="password" class="margin-top-10 text-center" placeholder="Enter password" modifier="material" float autofocus></ons-input>
+          <ons-input style="text-align:center;" type="text" id="nickname" class="margin-top-10 text-center" placeholder="Enter nickname"
+            modifier="material" float autofocus></ons-input>
         </form>
-               
-      <ons-button id="push-button">Start</ons-button>
-    </div>
-  </ons-page>
-</template> <!--FirstPage-->
+
+        <ons-button id="push-button">Start</ons-button>
+      </div>
+    </ons-page>
+  </template>
+  <!--FirstPage-->
 
 
+  <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+
+  <script>
+
+    var config = {
+      apiKey: "AIzaSyDG4VV3dVvUT4njZroBLRTPlRr1pmnN1os",
+      authDomain: "nownow-98a2f.firebaseapp.com",
+      databaseURL: "https://nownow-98a2f.firebaseio.com",
+      projectId: "nownow-98a2f",
+      storageBucket: "nownow-98a2f.appspot.com",
+      messagingSenderId: "902289067273"
+    };
+    firebase.initializeApp(config);
+
+    document.addEventListener('init', function (event) {
+
+      var page = event.target;
 
 
-<script>
+      page.querySelector('#push-form').onsubmit = function () {
+        if ($('#nickname').val() == '') {
+          ons.notification.alert("Enter your nickname before you can proceed!");
+          return false;
+        } else {
+          validateNickname();
+          return false;
+        }
 
- document.addEventListener('init', function(event) {
- 
- var  password = $('#password').val();
- var page = event.target;
+      }
 
-
-page.querySelector('#push-form').onsubmit = function() {
+      page.querySelector('#push-button').onclick = function () {
         if ($('#password').val() == '') {
-                ons.notification.alert("Enter your password before you can proceed!");
-                return false;
-              } else {
-                  window.location.href="mainpage.html";
-                  return false;
-              }
- 
-}
+          ons.notification.alert("Enter your password before you can proceed!");
+          return false;
+        } else {
+          validateNickname();
+          // window.location.href = "mainpage.html";
+          return false;
+        }
 
-page.querySelector('#push-button').onclick = function() {
-        if ($('#password').val() == '') {
-                ons.notification.alert("Enter your password before you can proceed!");
-                return false;
-              } else {
-                  window.location.href="mainpage.html";
-                  return false;
-              }
- 
-}
- 
- });
-</script>
+      }
+
+      function validateNickname() {
+        var regCurrentID = $('#nickname').val();
+        var userRef = firebase.database().ref().child('users').orderByChild('nickname').equalTo(regCurrentID);
+        userRef.once("value")
+          .then(function (snapshot) {
+            var userData = snapshot.val();
+            if (userData) {
+              window.location.href = "mainpage.html?Nickname="+regCurrentID;
+              // ons.notification.alert('Nickname already exists!');
+            } else {
+              ons.notification.alert('Nickname doesn\'t exist!');
+
+            }
+          });
+      }
+
+
+
+    });
+  </script>
 
 </body>
+
 </html>

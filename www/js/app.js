@@ -12,14 +12,6 @@ firebase.initializeApp(config);
 
 document.addEventListener('init', function (event) {
 
-    /*       var firebaseIDRef = firebase.database().ref().child();
-    
-          firebaseIDRef.on('value', function(datasnapshot){
-            var userID = datasnapshot.val();
-            alert(userID);
-    
-          }); */
-
     var page = event.target;
 
     if (page.id === 'index') {
@@ -51,15 +43,6 @@ document.addEventListener('init', function (event) {
                     });
 
                 return false;
-                // var userID = lastIndex+1;
-
-                // input data (start)
-
-
-                // Reassign lastID value
-                // lastIndex = userID;
-                // $("#addUser input").val("");
-                // input data (end)
 
             }
         }
@@ -148,9 +131,10 @@ document.addEventListener('init', function (event) {
                 console.log('picture present');
                 //Create a root reference in pictures
                 var filename = selectedFile.name;
-                var storageRef = firebase.storage().ref('/profileImages/' + filename);
+                var storageRef = firebase.storage().ref('/profileImages/' + nickname + filename);
+                // var storageRef = firebase.storage().ref('/profileImages/' + new Date().getTime() + filename);
                 var uploadTask = storageRef.put(selectedFile);
-
+                ons.notification.alert('Please wait for your picture to upload.');
                 // Register three observers:
                 // 1. 'state_changed' observer, called any time the state changes
                 // 2. Error observer, called on failure
@@ -160,19 +144,25 @@ document.addEventListener('init', function (event) {
                     // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     console.log('Upload is ' + progress + '% done');
+                    // ons.notification.alert('Upload is ' + progress + '% done');
                     switch (snapshot.state) {
                         case firebase.storage.TaskState.PAUSED: // or 'paused'
                             console.log('Upload is paused');
                             break;
+                        // case firebase.storage.TaskState.SUCCESS:
+                        // ons.notification.alert('Upload complete!');
+                        // break;
                         case firebase.storage.TaskState.RUNNING: // or 'running'
                             console.log('Upload is running');
                             break;
+
                     }
                 }, function (error) {
                     // Handle unsuccessful uploads
                 }, function () {
                     // Handle successful uploads on complete
                     // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                    ons.notification.alert('Upload complete!');
                     uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
                         // console.log('File available at', downloadURL);
 
@@ -191,81 +181,25 @@ document.addEventListener('init', function (event) {
 
             }
             document.querySelector('#myNavigator').pushPage('registration-complete.html');
-            // var database = firebase.database().ref();
-            // var userRef = database.child('users');
-
-            // var desc = $('textarea#aboutMe').val();
-
-            // var newuserID = userRef.push();
-            // var userID = newuserID.key;
-
-            // firebase.database().ref('users/' + userID).set({
-            //   nickname: nickname,
-            //   birthday: birthday,
-            //   gender: gender,
-            //   area: area,
-            //   desc: desc,
-            // });
-
-            // newuserID.set({
-            //     nickname: nickname,
-            //     birthday: birthday,
-            //     gender: gender,
-            //     desc: desc,
-            //     area: area,
-            //     url: downloadURL
-            // });
-
-            // Reassign lastID value
-            // lastIndex = userID;
-            // $("#addUser input").val("");
-
 
         }
     }
 
 });
 
-/* ons.bootstrap()
-.controller('UsersController', function($scope) {
-  console.log('controller', $scope.myNavigator.topPage.data);
-
-  this.init = function(e) {
-    // Ensure the emitter is the current page, not a nested one
-    if (e.target === e.currentTarget) {
-      var page = e.target;
-      // Safely access data
-      console.log('init event', page.data);
-    }
-  };
-}); */
-
-/* ons.bootstrap().controller('UsersController', function(){
-  this.nickname = '';
-
-});
-*/
 
 // Validation script
 
 function checkAgeLength() {
-    // var countLength = $('#minAge').val().length;
-    // alert(countLength);
 
     if ($('#minAge').val().length < 2) {
         $('#minAge').charLimit({ limit: 2 });
-        // $('#minAge').inputmask("decimal", {min: 18, max: 100});
     }
 
     if ($('#maxAge').val().length < 3) {
         $('#maxAge').charLimit({ limit: 3 });
     }
 }
-// var maxChars = 2;
-// if ($(this).val().length > maxChars) {
-//         $(this).val() = $(this).val().slice(0, 2);
-
-//     } 
 
 
 function validateAges() {
@@ -273,30 +207,6 @@ function validateAges() {
     if ($('#minAge').val() < 18) {
         ons.notification.alert('Must be 18 and above!');
     }
-
-    // return event.charCode >= 48 && event.charCode <= 57
-
-    // $('#minAge').keyup(function () {
-    //   //Hardcoded minimum and maximum ages
-    //   var minNum = 18;
-    //   if (parseInt($(this).val()) > minNum) {
-    //     $(this).val('');
-    //     ons.notification('Minimum age is 18 years old!');
-    //   } else {
-
-    //   }
-    // });
-
-    // $('#maxAge').keyup(function () {
-    //   //Hardcoded minimum and maximum ages
-    //   var maxNum = 100;
-    //   if (parseInt($(this).val()) > maxNum) {
-    //     $(this).val('');
-    //     ons.notification('Maximum age is 100 years old!')
-    //   } else {
-
-    //   }
-    // });
 }
 
 
@@ -305,7 +215,6 @@ var rootRef = firebase.database().ref();
 var userID = rootRef.child('users/').push().getKey();
 
 function updateData() {
-
 
     nickname = $('#nickname').val();
     desc = $('#desc').val();
@@ -376,8 +285,16 @@ document.addEventListener('init', function (event) {
     var page = event.target;
     var titleElement = document.querySelector('.toolbar-title');
 
-
     if (page.id === 'first-page') {
+        var userNickname = $(document).getUrlParam('Nickname');
+        console.log(userNickname);
+        
+        firebase.database().ref().child('users').orderByChild('nickname').equalTo(userNickname).once('value')
+        .then(function(snapshot){
+            var imgSrc = snapshotToArray(snapshot)[0].url;
+            console.log(imgSrc);
+            $("#avatar").attr("src", imgSrc);
+        });
         titleElement.innerHTML = 'Search';
         page.querySelector('#btn-toGPS').onclick = function () {
 
@@ -385,8 +302,8 @@ document.addEventListener('init', function (event) {
             var transRef = database.child('transmissions');
 
             // var specifictransID = lastIndex + 1;
-            var rawTime = moment().format('LT');
-            var rawDate = moment().format('LL');
+            // var rawTime = moment().format('LT');
+            // var rawDate = moment().format('LL');
 
             // var userID = lastIndex + 1;
             var gender = $('input[name=gender]:checked').val();
@@ -414,8 +331,8 @@ document.addEventListener('init', function (event) {
                     maxAge: maxAge,
                     radius: radius,
                     message: message,
-                    date: rawDate,
-                    time: rawTime
+                    date: moment().format('LT'),
+                    time: moment().format('LL')
                 });
 
                 // firebase.database().ref('transmissions/' + specifictransID).set({
@@ -515,15 +432,6 @@ var showConfirm = function () {
 function showTransmission(specifictransID) {
 
     document.querySelector('#myNavigator').addEventListener('postpush', function (event) {
-
-        // var transmissionListings = $('div.details').children();
-        // for(var i = 0; i< transmissionListings.length; i++){
-        //     if(transmissionListings.length > 1){
-        //         console.log(transmissionListings.length);
-        //     }
-        //     // transmissionListings[i].remove();
-        //     // console.log(transmissionListings);
-        // }
 
         var ref = firebase.database().ref('transmissions');
         // specifictransID = "-LHX--CDpzSUJRJmykOc";
