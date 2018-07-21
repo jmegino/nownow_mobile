@@ -92,6 +92,9 @@ document.addEventListener('init', function (event) {
         $('#file-input').on('change', function (event) {
             document.getElementById('avatar').src = window.URL.createObjectURL(this.files[0]);
             selectedFile = event.target.files[0];
+                $('#file-input').ImageResize({
+                    maxWidth: 300
+                });
             console.log(selectedFile);
         });
 
