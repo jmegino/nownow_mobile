@@ -442,8 +442,7 @@ function updateProfile(userKey) { //occurs when done button is clicked in edit p
                     data = { nickname, desc }
                     firebase.database().ref().child('users/' + userKey).update(data);
                     console.log(data);
-                    setTimeout(function () { //needs preloader or toast notification that profile is successfully updated
-                        window.location.href = "mainpage.html?Nickname=" + nickname;
+                    userNickname = nickname;
 
                     }, 2000);
 
